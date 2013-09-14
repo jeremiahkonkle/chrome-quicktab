@@ -11,6 +11,7 @@ chrome.omnibox.onInputChanged.addListener(
       {content: text + " one", description: "the first one"},
       {content: text + " number two", description: "the second entry"}
     ]);
+    chrome.omnibox.setDefaultSuggestion( { description: "I'm a default!"} );
   });
 
 // This event is fired with the user accepts the input in the omnibox.
