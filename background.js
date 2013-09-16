@@ -49,8 +49,6 @@ var QuickTab = (function(config) {
     
     self.addInputChangedListener(self.suggestionListener);
     self.addInputConfirmedListener(self.confirmedListener);
-    
-    self.suggestionListener("java", function(suggestions) { console.dir(suggestions); });
   };
   
   self.suggestionListener = function(text, setSuggestions) {
