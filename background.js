@@ -28,7 +28,7 @@ var quickTabConfig = function chromeConfig() {
   return {
     addInputChangedListener: function(listener) { omnibox.onInputChanged.addListener(listener); },
     addInputConfirmedListener: function(listener) { omnibox.onInputEntered.addListener(listener); },
-    setDefaultSuggestion: function (sug) { omnibox.setDefaultSuggestion({description: sug.title}); },
+    setDefaultSuggestion: function (sug) { omnibox.setDefaultSuggestion({description: sug.text}); },
     getAllTabs: function(result) { tabs.query({}, result); },
     suggestionFromTab: function(tab, sugFactory) { return sugFactory.make(tab.id, tab.title); },
     activateTab: function(tab_id) { tabs.update(tab_id, {active: true}); },
@@ -58,11 +58,16 @@ var QuickTab = (function(config) {
     
     self.addInputChangedListener(self.suggestionListener);
     self.addInputConfirmedListener(self.confirmedListener);
+    
+    self.suggestionListener("java", function(suggestions) { console.dir(suggestions); });
   };
   
   self.suggestionListener = function(text, setSuggestions) {
     self.getSuggestions(text, function(suggestions) {
+      console.log("about to");
+      console.dir(suggestions);
       self.setDefaultSuggestion(suggestions.primary);
+      console.log("quite");
       self.curr_primary = suggestions.primary;
       setSuggestions( suggestions.additional.map(self.formatSuggestion) );
     });
@@ -74,7 +79,7 @@ var QuickTab = (function(config) {
       suggestions = self.separateFirstSuggestion(suggestions);
       
       return_result({
-        primary: suggestions.first ? suggestions.first : self.noneFoundText,
+        primary: suggestions.first ? suggestions.first : self.sugFactory.make("", self.noneFoundText),
         additional: suggestions.rest
       });
     });
@@ -137,15 +142,17 @@ var QuickTab = (function(config) {
     var Suggestion = function(key, text, matches) {
       var self = this;
     
-      var init = function() {
+      self.init = function() {
         self.text = text;
         self.key = self.normalizeKey(key);
         self.matches = matches;
       }
     
-      var normalizeKey = function(key) {
-        if (input.indexOf(key_prefix) === 0) {
-          key = Number(input.slice(key_prefix.length));
+      self.normalizeKey = function(key) {
+        key = ""+key; // cast to string
+        console.log(key);
+        if (key.indexOf(key_prefix) === 0) {
+          key = Number(key.slice(key_prefix.length));
         }
         return key;
       };
@@ -161,15 +168,15 @@ var QuickTab = (function(config) {
         return self._matchableText;
       };
     
-      init();
+      self.init();
     };
   
-    this.make = function(text, key, matches) {
-      return new Suggestion(text, key, matches);
+    this.make = function(key, text, matches) {
+      return new Suggestion(key, text, matches);
     };
-  });
+  };
   
   self.init();
     
-})( quickTabConfig );
+})( quickTabConfig() );
 
