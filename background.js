@@ -28,19 +28,12 @@ var quickTabConfig = function chromeConfig() {
   return {
     addInputChangedListener: function(listener) { omnibox.onInputChanged.addListener(listener); },
     addInputConfirmedListener: function(listener) { omnibox.onInputEntered.addListener(listener); },
-    setDefaultSuggestion: function (sug) { omnibox.setDefaultSuggestion({description: sug.text}); },
+    setDefaultSuggestion: function (sug) { omnibox.setDefaultSuggestion({description: sug.displayText()}); },
     getAllTabs: function(result) { tabs.query({}, result); },
     suggestionFromTab: function(tab, sugFactory) { return sugFactory.make(tab.id, tab.title); },
     activateTab: function(tab_id) { tabs.update(tab_id, {active: true}); },
-    activateWindow: function(window_id) { windows.update(window_id, {focused: true}); },
-    suggestionFormatter: function(prefix) {
-      this.formatSuggestion = function(sug) {
-        return { 
-          content: prefix+sug.key, 
-          description: sug.text
-        }
-      }
-    },
+    activateWindow: function(window_id) { windows.update(window_id, {focused: true}); },    
+    formatSuggestion: function(sug) { return { content: sug.prefixedKey(), description: sug.displayText() }; },
     // and some configurables
     keyPrefix: "tab:",
     noneFoundText: "No Tabs Found (Open Blank?)"
@@ -52,9 +45,7 @@ var QuickTab = (function(config) {
   
   self.init = function() {
     self.curr_primary = null,
-    self.sugFactory = new SuggestionFactory(
-        self.suggestionFormatter(self.prefix)
-    );
+    self.sugFactory = new SuggestionFactory(self.prefix);
     
     self.addInputChangedListener(self.suggestionListener);
     self.addInputConfirmedListener(self.confirmedListener);
@@ -64,10 +55,7 @@ var QuickTab = (function(config) {
   
   self.suggestionListener = function(text, setSuggestions) {
     self.getSuggestions(text, function(suggestions) {
-      console.log("about to");
-      console.dir(suggestions);
       self.setDefaultSuggestion(suggestions.primary);
-      console.log("quite");
       self.curr_primary = suggestions.primary;
       setSuggestions( suggestions.additional.map(self.formatSuggestion) );
     });
@@ -97,7 +85,7 @@ var QuickTab = (function(config) {
   
   self.filterSuggestions = function(filter_val, suggestions) {
     var is_match = self.getRegExp(filter_val);
-    return suggestions.filter( function(sug) { return is_match.test(sug.matchable_text()); });
+    return suggestions.filter( function(sug) { return is_match.test(sug.matchableText()); });
   };
 
   self.getRegExp = function(filter_val) {
@@ -136,9 +124,8 @@ var QuickTab = (function(config) {
     self.activateWindow(tab.windowId);
   }
   
-  var SuggestionFactory = function(formatter, key_prefix) {
-    this.formatter = formatter;
-  
+  var SuggestionFactory = function(key_prefix) {
+    
     var Suggestion = function(key, text, matches) {
       var self = this;
     
@@ -156,12 +143,16 @@ var QuickTab = (function(config) {
         }
         return key;
       };
-    
-      self.get = function() {
-        formatter(the_sug);
+      
+      self.prefixedKey = function () {
+        return key_prefix + self.key;
       };
       
-      self.matchable_text = function() {
+      self.displayText = function () {
+        return self.text;
+      };
+      
+      self.matchableText = function() {
         if (!self._matchableText) {
           self._matchableText = self.text.toLowerCase();
         }
