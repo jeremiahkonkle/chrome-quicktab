@@ -1,0 +1,31 @@
+{
+  "name": "devtasks-scaffold",
+  "version": "0.0.0",
+  "description": "sandbox for setting up some dev task workflows",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeremiahkonkle/devtasks-scaffold.git"
+  },
+  "author": "Jeremiah Konkle",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/jeremiahkonkle/devtasks-scaffold/issues"
+  },
+  "homepage": "https://github.com/jeremiahkonkle/devtasks-scaffold",
+  "devDependencies": {
+    "gulp": "~3.6.0",
+    "gulp-browserify": "~0.5.0",
+    "gulp-rename": "~1.2.0",
+    "coffee-script": "~1.7.1",
+    "gulp-clean": "~0.2.4",
+    "gulp-util": "~2.2.14",
+    "process": "~0.6.0",
+    "open": "0.0.4",
+    "connect": "~2.14.3",
+    "gulp-connect": "~1.1.1"
+  }
+}
