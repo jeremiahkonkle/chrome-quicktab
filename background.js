@@ -30,6 +30,7 @@ var quickTabConfig = function chromeConfig() {
     addInputConfirmedListener: function(listener) { omnibox.onInputEntered.addListener(listener); },
     setDefaultSuggestion: function (sug) { omnibox.setDefaultSuggestion({description: sug.displayText()}); },
     getAllTabs: function(result) { tabs.query({}, result); },
+    getSpecificTab: function(tab_id, result) { tabs.get(tab_id, result); },
     suggestionFromTab: function(tab, sugFactory) { return sugFactory.make(tab.id, tab.title); },
     activateTab: function(tab_id) { tabs.update(tab_id, {active: true}); },
     activateWindow: function(window_id) { windows.update(window_id, {focused: true}); },    
@@ -73,7 +74,6 @@ var QuickTab = (function(config) {
 
   self.allPossibleSuggestions = function(return_result) {
     self.getAllTabs(function(tabs) {
-      //console.dir(tabs);
       var suggestions = tabs.map(function(tab) {
         return self.suggestionFromTab(tab, self.sugFactory);
       });
@@ -105,10 +105,10 @@ var QuickTab = (function(config) {
   
   self.confirmedListener = function(input) {
     var tab_id;
-    if (input.indexOf("tab:") === 0) {
-      tab_id = Number(input.slice(4));
-      self.getTab(tab_id, function(tab) { 
-        self.selectTab();
+    if (self.isPrefixedKey(input)) {
+      tab_id = self.extractBaseKey(input);
+      self.getSpecificTab(tab_id, function(tab) { 
+        self.selectTab(tab);
       });
     } else {
       if (self.curr_primary) {
@@ -116,6 +116,14 @@ var QuickTab = (function(config) {
       }
     }
   };
+  
+  self.isPrefixedKey = function(key) {
+    return (key.indexOf(self.prefix) === 0);
+  };
+  
+  self.extractBaseKey = function(prefixed_key) {
+    return Number(prefixed_key.slice(self.key_prefix));
+  }
   
   self.selectTab = function(tab) {
     self.activateTab(tab.id);
@@ -135,7 +143,6 @@ var QuickTab = (function(config) {
     
       self.normalizeKey = function(key) {
         key = ""+key; // cast to string
-        console.log(key);
         if (key.indexOf(key_prefix) === 0) {
           key = Number(key.slice(key_prefix.length));
         }
