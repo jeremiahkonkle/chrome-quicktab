@@ -23,9 +23,6 @@
     "coffee-script": "~1.7.1",
     "gulp-clean": "~0.2.4",
     "gulp-util": "~2.2.14",
-    "process": "~0.6.0",
-    "open": "0.0.4",
-    "connect": "~2.14.3",
-    "gulp-connect": "~1.1.1"
+    "open": "0.0.4"
   }
 }
