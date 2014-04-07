@@ -1,0 +1,29 @@
+{
+  "name": "chrome-quicktab",
+  "version": "0.0.1",
+  "description": "foo",
+  "main": "build/background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jeremiahkonkle/chrome-quicktab.git"
+  },
+  "author": "Jeremiah Konkle",
+  "license": "Copyright 2014 Jeremiah Konkle",
+  "bugs": {
+    "url": "https://github.com/jeremiahkonkle/chrome-quicktab/issues"
+  },
+  "homepage": "https://github.com/jeremiahkonkle/chrome-quicktab",
+  "private": true,
+  "devDependencies": {
+    "gulp": "~3.6.0",
+    "coffee-script": "~1.7.1",
+    "browserify": "~3.38.1",
+    "gulp-rename": "~1.2.0",
+    "open": "0.0.4",
+    "gulp-clean": "~0.2.4",
+    "gulp-browserify": "~0.5.0"
+  }
+}

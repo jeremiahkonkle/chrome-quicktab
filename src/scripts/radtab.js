@@ -8,7 +8,7 @@
 var main = function() {
   // this kicks it off, we call main() at the bottom of this file
   var tab_dupe_checker = new TabDuplicateChecker();
-  rt_log("loaded");
+  rt_log("loadedfive");
 }
 
 var TabDuplicateChecker = function(config) {
