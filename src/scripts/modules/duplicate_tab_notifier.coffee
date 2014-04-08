@@ -8,10 +8,11 @@ BasicLogger = require('./basic_logger');
 
 class DuplicateTabNotifier
   constructor: (@config = {}) ->
-    @log = config.logger || new BasicLogger({prefix:'DuplicateTabNotifier'});
+    @log = config.logger or
+      new BasicLogger(prefix:'DuplicateTabNotifier')
   
     # we require that this is an up-to-date or live syncronizing list of open tabs so we can query it synchronously
-    @tabs = config.tabs || [];
+    @tabs = config.tabs or []
     
     chrome.webRequest.onBeforeRequest.addListener(
       (request) => @handle_request request,
