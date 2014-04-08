@@ -1,4 +1,5 @@
 gulp = require 'gulp'
+gutil = require 'gulp-util'
 browserify = require 'gulp-browserify'
 rename = require 'gulp-rename'
 clean = require 'gulp-clean'
@@ -8,7 +9,7 @@ src_dir = "src"
 build_dir = "build"
 static_dir = "src/static"
 scripts_dir = "src/scripts"
-scripts_entry = 'radtab.js'
+scripts_entry = 'radtab.coffee'
 scripts_exit = 'radtab-bundle.js'
 
 ## BUILD - this does everything we need to do a one off build to get a runnable and testable build into the build directory
@@ -20,12 +21,17 @@ gulp.task 'dev', ['build-watch']
 # sub-tasks that can be run standalone
 
 gulp.task 'build-watch', ['build'], ->
-  gulp.watch "#{src_dir}/**", debounceDelay:500, ['build']
+  gulp.watch "#{src_dir}/**", debounceDelay:500, ['build-all']
 
 gulp.task 'build-all', ['clean'], ->
   # build and bundle scripts
-  gulp.src "#{scripts_dir}/#{scripts_entry}"
-  .pipe browserify(insertGlobals: true, debug: true)
+  gulp.src "#{scripts_dir}/#{scripts_entry}", read: false
+  .pipe browserify({
+    debug: true, 
+    transform: ['coffeeify'],
+    extensions: ['.coffee']
+  })
+  .on 'error', gutil.log
   .pipe rename(scripts_exit)
   .pipe gulp.dest(build_dir)
   
@@ -35,5 +41,7 @@ gulp.task 'build-all', ['clean'], ->
   .pipe gulp.dest(build_dir)
 
 gulp.task 'clean', ->
-  src = build_dir + "/**" # everything except dirs
-  gulp.src(src, {read: false}).pipe(clean())
+  src = build_dir + "/*"
+  gulp.src(src, {read: false})
+  .on 'error', gutil.log
+  .pipe(clean())
